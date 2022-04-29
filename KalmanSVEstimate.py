@@ -126,7 +126,8 @@ for i in range(1, N):
 
     # (4).状态修正方程
     z = np.array([S_measure[i], V_measure[i]])  # 测量值, eg: 传感器数据
-    x_hat[i] = x_hat_minus[i] + K.dot(z - H.dot(x_hat_minus[i]))
+    y = z - H.dot(x_hat_minus[i])  # 观测-预测误差
+    x_hat[i] = x_hat_minus[i] + K.dot(y)
 
     # (5).误差修正方程
     print(K.dot(H))

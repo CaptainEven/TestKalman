@@ -38,10 +38,11 @@ velocity_noise = np.random.normal(0, 9.9, size=N)  # 速率高斯白噪声
 S_meas = shift_real + shift_noise  # 加入高斯白噪声的位移测量值
 V_meas = velocity_real + velocity_noise  # 加入高斯暴躁生的速率测量值
 
-# 过程噪声(测量噪声)的协方差矩阵:协方差(对角线)为0, 位移s的过程噪声方差为0
-Q = np.array([[0.1, 0],
-              [0, 1.2]])
-# print('Q: ', Q)
+# 过程噪声(预测噪声)的协方差矩阵:非协方差(对角线)为0: 两个状态变量独立分布
+# 位移s的过程噪声方差为0
+Q = np.array([[0.2, 0.1],
+              [0.1, 1.2]])
+print("Q:\n", Q)
 
 # 系统测量噪声(状态转移噪声)为常量
 # 测量噪声R增大,动态响应变慢,收敛稳定性变好

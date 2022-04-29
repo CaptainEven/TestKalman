@@ -24,7 +24,7 @@ size = (N, 2)
 print(size)
 u = 10  # 控制向量                          # 重力加速度, 模拟自由落体运动位置估计
 shift_real = 0.5 * u * t * t  # 真实位移值
-velosity_real = u * t  # 真是速率值
+velocity_real = u * t  # 真是速率值
 # print('x: ', x)
 shift_noise = np.random.normal(0, 15.0, size=N)  # 位移高斯白噪声
 # size_1 = int(round(0.375*N))

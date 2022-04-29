@@ -11,4 +11,4 @@
             测量方式为直接获得位置坐标而无需公式转换，所以观测矩阵H中位移为1,速度为1
 
 # Demo figure
-![image](https://github.com/CaptainEven/MCMOT-ByteTrack/blob/master/test_13.gif)
+![image](https://github.com/CaptainEven/TestKalman/blob/master/shift_velociity.png)

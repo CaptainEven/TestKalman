@@ -38,6 +38,8 @@ velocity_noise = np.random.normal(0, 9.9, size=N)  # 速率高斯白噪声
 S_measure = shift_real + shift_noise  # 加入高斯白噪声的位移测量值
 V_measure = velocity_real + velocity_noise  # 加入高斯暴躁生的速率测量值
 
+
+## -----协方差矩阵: 描述变量的相关性
 # 过程噪声(预测噪声)的协方差矩阵:
 # 非协方差(对角线)为0: 两个状态变量独立分布: 位置和速度是不相关的
 # 位移s的过程噪声方差为0

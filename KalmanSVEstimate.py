@@ -101,7 +101,8 @@ for i in range(1, N):
     ## --------- predict
     # t-1 到 t时刻的状态预测，得到前验概率
     # (1).状态转移方程
-    x_hat_minus[i] = A.dot(x_hat[i - 1]) + B * g
+    # x_hat_minus[i] = A.dot(x_hat[i - 1]) + B * g
+    x_hat_minus[i] = np.dot(A, x_hat[i - 1]) + B * g
 
     # (2).误差转移方程
     # P_minus = A.dot(P).dot(A.T) + Q  

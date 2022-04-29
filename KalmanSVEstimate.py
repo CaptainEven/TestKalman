@@ -60,34 +60,42 @@ print("\n:", B)
 
 # 控制向量g: 重力加速度
 
-# 测量值当然是由系统状态变量映射出来的
-# 系统状态变量到测量值的转换矩阵:z = h*x+v(测量噪声)
+# 测量转换矩阵H: 测量值当然是由系统状态变量映射出来的
+# 系统状态变量到实际测量值的转换矩阵: z = h*x+v(测量噪声)
 H = np.array([[1, 0],
               [0, 1]])  # 系统状态变量中,既测量位移,也测量速度，此时相当于单位矩阵
 
 # 系统初始化
 n = Q.shape
 # print('n:', n)
+
 m = R.shape
 # print('m:', m)
 
 x_hat = np.zeros(size)  # x的后验估计值
-# print('x_hat:', x_hat)
-# P = np.zeros(n)              # 后验估计误差协方差矩阵(每次迭代最后需更新)
-P = np.array([[2, 0],
-              [0, 2]])
-# print('P: ', P)
-x_hat_minus = np.zeros(size)  # x的先验估计值(上一次估计值, 每次迭代开始需更新)
-P_minus = np.zeros(n)  # 先验估计误差协方差矩阵(每次迭代开始需更新)
+print("x_hat:\n", x_hat)
+
+# 后验估计误差协方差矩阵(每次迭代最后需更新)
+P = np.eye(2)
+print("P:\n", P)
+
+# x的先验估计值(上一次估计值, 每次迭代开始需更新)
+x_hat_minus = np.zeros(size)
+
+# 先验估计误差协方差矩阵(每次迭代开始需更新)
+P_minus = np.zeros(n)
 # print('P_minus init:', P_minus)
-K = np.zeros((n[0], m[0]))  # Kalman增益矩阵(2*2)
+
+# Kalman增益矩阵(2*2)
+K = np.zeros((n[0], m[0]))
 # print('K:', K)
+
 I = np.eye(n[0], n[1])  # 单位矩阵
 # print('I:', I)
 
 # Kalman迭代过程
 for i in range(1, N):
-    # --------- predict
+    ## --------- predict
     # t-1 到 t时刻的状态预测，得到前验概率
     # (1).状态转移方程
     x_hat_minus[i] = A.dot(x_hat[i - 1]) + B * g
@@ -96,7 +104,7 @@ for i in range(1, N):
     # P_minus = A.dot(P).dot(A.T) + Q  
     P_minus = np.linalg.multi_dot((A, P, A.T)) + Q
 
-    # ---------- update
+    ## ---------- update
     # 根据观察量对预测状态进行修正，得到后验概率，也就是最优值
     # (3).Kalman增益
     K = P_minus.dot(H.T).dot(np.linalg.inv(H.dot(P_minus).dot(H.T) + R))

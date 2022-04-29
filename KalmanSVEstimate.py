@@ -19,7 +19,6 @@ python3做匀加速小车位置估计的Kalman滤波模拟:
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 dt = 0.1  # 采样间隔时间(单位s)
 t = np.linspace(0, 10, 101, endpoint=True)  # 时间序列
 # print('t:', t)
@@ -40,7 +39,6 @@ velocity_noise = np.random.normal(0, 9.9, size=N)  # 速率高斯白噪声
 
 S_measure = shift_real + shift_noise  # 加入高斯白噪声的位移测量值
 V_measure = velocity_real + velocity_noise  # 加入高斯暴躁生的速率测量值
-
 
 ## -----协方差矩阵: 描述变量的相关性
 # 过程噪声/扰动(预测噪声)的协方差矩阵:
@@ -155,3 +153,5 @@ plt.show()
 # 下一步考虑track cross坐标定位的Kalman建模：从单个坐标到81个坐标
 # 下一步考虑Intensity建模
 # 下一步考虑扩展卡尔曼滤波算法(EKF)对非线性系统建模
+# ref:
+# https://blog.csdn.net/u010720661/article/details/63253509

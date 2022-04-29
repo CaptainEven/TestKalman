@@ -1,8 +1,10 @@
 # encoding=utf-8
-# By Even
+# By Liuyiwen
+# 765305261@qq.com
 
 """
-通过python3改写匀加速小车位置估计的Kalman滤波模拟
+通过python3改写匀加速小车位置估计的Kalman滤波模拟:
+在预测值和传感器测量值之间找到最优解, 是一个最优化后验概率(MAP)的过程。
 (1). 系统的状态变量总共2个: 位移S和速度v,且假设这两个系统状态变量不相关
 (2). 系统建模——状态转移方程:
             [St, Vt]' = [[1, Δt], *  [S(t-1), V(t-1)]' + [1/2*(Δt)^2, Δt]' * a(加速度)
@@ -120,7 +122,7 @@ for i in range(1, N):
     print('\n--Round %d K:\n' % i, K)
 
     # (4).状态修正方程
-    z = np.array([S_measure[i], V_measure[i]])  # 测量值
+    z = np.array([S_measure[i], V_measure[i]])  # 测量值, eg: 传感器数据
     x_hat[i] = x_hat_minus[i] + K.dot(z - H.dot(x_hat_minus[i]))
 
     # (5).误差修正方程

@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-delta_t = 0.1  # 采样间隔
+dt = 0.1  # 采样间隔时间(单位s)
 t = np.linspace(0, 10, 101, endpoint=True)  # 时间序列
 # print('t:', t)
 N = len(t)
@@ -52,11 +52,11 @@ R = np.array([[3.0, 0],  # R该如何设置初值?
 print("R:\n", R)
 
 # x系统建模：系统状态转移矩阵A(2*2)
-A = np.array([[1, delta_t], [0, 1]])
+A = np.array([[1, dt], [0, 1]])
 print("A:\n", A)
 
 # 控制矩阵B(2*1)
-B = np.array([0.5 * delta_t * delta_t, delta_t])
+B = np.array([0.5 * dt * dt, dt])
 print("\n:", B)
 
 # 控制向量g: 重力加速度

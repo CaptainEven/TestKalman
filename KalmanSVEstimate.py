@@ -35,8 +35,8 @@ velocity_noise = np.random.normal(0, 9.9, size=N)  # 速率高斯白噪声
 # noise_2 = np.random.normal(0, 11.0, size=N-size_1)
 # noise = np.append(noise_1, noise_2) # numpy数组拼接
 
-S_meas = shift_real + shift_noise  # 加入高斯白噪声的位移测量值
-V_meas = velocity_real + velocity_noise  # 加入高斯暴躁生的速率测量值
+S_measure = shift_real + shift_noise  # 加入高斯白噪声的位移测量值
+V_measure = velocity_real + velocity_noise  # 加入高斯暴躁生的速率测量值
 
 # 过程噪声(预测噪声)的协方差矩阵:非协方差(对角线)为0: 两个状态变量独立分布
 # 位移s的过程噪声方差为0
@@ -107,18 +107,19 @@ for i in range(1, N):
     ## ---------- update
     # 根据观察量对预测状态进行修正，得到后验概率，也就是最优值
     # (3).Kalman增益
-    K = P_minus.dot(H.T).dot(np.linalg.inv(H.dot(P_minus).dot(H.T) + R))
+    # K = P_minus.dot(H.T).dot(np.linalg.inv(H.dot(P_minus).dot(H.T) + R))
+    K = P_minus.dot(H.T).dot(np.linalg.inv(np.linalg.multi_dot((H, P_minus, H.T)) + R))
     print('\n--Round %d K:\n' % i, K)
 
     # (4).状态修正方程
-    x_hat[i] = x_hat_minus[i] + \
-               K.dot(np.array([S_meas[i], V_meas[i]]) -
-                     H.dot(x_hat_minus[i]))
+    z = np.array([S_measure[i], V_measure[i]])
+    x_hat[i] = x_hat_minus[i] + K.dot(z - H.dot(x_hat_minus[i]))
 
     # (5).误差修正方程
-    # P = (I - K.dot(H)).dot(P_minus)
     print(K.dot(H))
-    P = P_minus - K.dot(H).dot(P_minus)
+    P = (I - K.dot(H)).dot(P_minus)
+    # P = P_minus - K.dot(H).dot(P_minus)
+    # P = P_minus - np.linalg.multi_dot((K, H, P_minus))
     print('--Round %d P:\n' % i, P)
 
 # 取位移和速度的估计值
@@ -127,8 +128,8 @@ V_estimate = [v for (s, v) in x_hat]
 
 # Kalman迭代过程
 plt.figure()
-plt.plot(S_meas, 'r+', label='measured shift')  # 测量位移值
-plt.plot(V_meas, 'm+', label='measured velocity')  # 测量速率值
+plt.plot(S_measure, 'r+', label='measured shift')  # 测量位移值
+plt.plot(V_measure, 'm+', label='measured velocity')  # 测量速率值
 plt.plot(S_estimate, 'b-', label='estimated shift')  # 估计位移值
 plt.plot(V_estimate, 'b-', label='estimated velocity')  # 估计速率值
 plt.plot(shift_real, 'y-', label='real shift')  # 真实位移值

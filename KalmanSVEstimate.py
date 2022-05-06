@@ -69,6 +69,7 @@ B = np.array([0.5 * dt * dt, dt])
 print("\n:", B)
 
 # 外部控制量: 控制输入向量, eg: 重力加速度
+u = g
 
 # 测量(变换)矩阵H: 测量值当然是由系统状态变量映射出来的,
 # eg: 量纲/尺度转换, 将状态变量值转换成传感器读数值
@@ -110,8 +111,8 @@ for i in range(1, N):
     ## --------- predict
     # t-1 到 t时刻的状态预测，得到前验概率
     # (1).状态转移方程
-    # x_hat_minus[i] = A.dot(x_hat[i - 1]) + B * g
-    x_hat_minus[i] = np.dot(A, x_hat[i - 1]) + B * g
+    # x_hat_minus[i] = A.dot(x_hat[i - 1]) + B * u
+    x_hat_minus[i] = np.dot(A, x_hat[i - 1]) + B * u
 
     # (2).误差转移方程
     # P_minus = A.dot(P).dot(A.T) + Q  
@@ -121,7 +122,8 @@ for i in range(1, N):
     # 根据观察量对预测状态进行修正，得到后验概率，也就是最优值
     # (3).Kalman增益
     # K = P_minus.dot(H.T).dot(np.linalg.inv(H.dot(P_minus).dot(H.T) + R))
-    K = P_minus.dot(H.T).dot(np.linalg.inv(np.linalg.multi_dot((H, P_minus, H.T)) + R))
+    PHt = P_minus.dot(H.T)
+    K = PHt.dot(np.linalg.inv(np.dot(H, PHt) + R))
     print('\n--Round %d K:\n' % i, K)
 
     # (4).状态修正方程

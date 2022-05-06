@@ -132,7 +132,7 @@ for i in range(1, N):
     x_hat[i] = x_hat_minus[i] + K.dot(y)
 
     # (5).误差修正方程
-    print(K.dot(H))
+    # print(K.dot(H))
     P = (I - K.dot(H)).dot(P_minus)
     # P = P_minus - K.dot(H).dot(P_minus)
     # P = P_minus - np.linalg.multi_dot((K, H, P_minus))

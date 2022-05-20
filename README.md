@@ -10,5 +10,8 @@
                            0, 1] 
             测量方式为直接获得位置坐标而无需公式转换，所以观测矩阵H中位移为1,速度为1
 
+# Demo
+run the python3 script KalmanSVEstimate.py
+
 # Demo figure
 ![image](https://github.com/CaptainEven/TestKalman/blob/master/shift_velociity.png)

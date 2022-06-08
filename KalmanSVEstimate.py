@@ -89,6 +89,7 @@ x_hat = np.zeros(size)  # x的后验估计值
 print("x_hat:\n", x_hat)
 
 # 后验估计误差协方差矩阵(每次迭代最后需更新)
+# uncertainty covariance: process noise covariance(过程噪声协方差矩阵)
 P = np.eye(2)
 print("P:\n", P)
 

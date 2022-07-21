@@ -208,11 +208,12 @@ def test_blur():
     :return:
     """
 
-    img_name = "b93aa54e08fb7d1b672d7bffb332bf73d96e942696dad2a2c67358d840bb5cbc.jpg"
-    img_dir = "e:/BKGImgs"
-    img_path = img_dir + "/" + img_name
+    img_name = "test_plate.jpg"
+    img_dir = "E:/PyProjs/TestExperiments"
+    img_path = os.path.abspath(img_dir + "/" + img_name)
     if not os.path.isfile(img_path):
         print("[Err]: invalid image path: {:s}".format(img_path))
+        exit(-1)
 
     img = cv2.imread(img_path, cv2.IMREAD_COLOR)
     h, w, c = img.shape

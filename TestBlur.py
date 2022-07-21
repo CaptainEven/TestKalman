@@ -207,7 +207,6 @@ def test_blur():
     """
     :return:
     """
-
     img_name = "test_plate.jpg"
     img_dir = "E:/PyProjs/TestExperiments"
     img_path = os.path.abspath(img_dir + "/" + img_name)

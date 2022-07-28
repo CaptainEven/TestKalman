@@ -13,11 +13,11 @@ def random_light_or_shadow(img, base=200, low=10, high=255):
     h, w, c = img.shape  # BGR or RGB
 
     ## ----- Randomly Generate Gauss Center
-    center_x = np.random.randint(-h * 1.5, h * 1.5)
-    center_y = np.random.randint(-h * 1.5, h * 1.5)
+    center_x = np.random.randint(-w * 1.2, w * 1.2)
+    center_y = np.random.randint(-h * 1.2, h * 1.2)
 
-    radius_x = np.random.randint(int(h * 0.5), h * 1.5)
-    radius_y = np.random.randint(int(h * 0.5), h * 1.5)
+    radius_x = np.random.randint(int(w * 0.5), w * 1.2)
+    radius_y = np.random.randint(int(h * 0.5), h * 1.2)
 
     delta_x = np.power((radius_x / 2), 2)
     delta_y = np.power((radius_y / 2), 2)

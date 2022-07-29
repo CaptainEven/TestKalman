@@ -40,7 +40,6 @@ def test_jpeg_compress():
     img_compress, quality_factor = random_jpeg_compress(img, low=10, high=95)
     ## -----
 
-
     print("JPEG quality factor: {:d}".format(quality_factor))
     cv2.imshow("JPEGCompress", img_compress)
     cv2.waitKey()

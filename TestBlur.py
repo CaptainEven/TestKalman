@@ -1,5 +1,5 @@
 # encoding=utf-8
-
+import math
 import os
 
 import cv2
@@ -10,6 +10,7 @@ import scipy
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
 from scipy.stats import multivariate_normal
+from scipy import special
 
 
 ## random blur kernel filtering
@@ -128,6 +129,27 @@ def random_anisotropic_gaussian_kernel(l=15,
     return k, np.array([sig1, sig2, theta])
 
 
+def circular_lowpass_kernel(cutoff, kernel_size, pad_to=0):
+    """
+    2D sinc filter, ref: https://dsp.stackexchange.com/questions/58301/2-d-circularly-symmetric-low-pass-filter
+    Args:
+        cutoff (float): cutoff frequency in radians (pi is max)
+        kernel_size (int): horizontal and vertical size, must be odd.
+        pad_to (int): pad kernel size to desired size, must be odd or zero.
+    """
+    assert kernel_size % 2 == 1, 'Kernel size must be an odd number.'
+    kernel = np.fromfunction(
+        lambda x, y: cutoff * special.j1(cutoff * np.sqrt(
+            (x - (kernel_size - 1) / 2) ** 2 + (y - (kernel_size - 1) / 2) ** 2)) / (2 * np.pi * np.sqrt(
+            (x - (kernel_size - 1) / 2) ** 2 + (y - (kernel_size - 1) / 2) ** 2)), [kernel_size, kernel_size])
+    kernel[(kernel_size - 1) // 2, (kernel_size - 1) // 2] = cutoff ** 2 / (4 * np.pi)
+    kernel = kernel / np.sum(kernel)
+    if pad_to > kernel_size:
+        pad_size = (pad_to - kernel_size) // 2
+        kernel = np.pad(kernel, ((pad_size, pad_size), (pad_size, pad_size)))
+    return kernel
+
+
 def random_gaussian_kernel(l=21,
                            sig_min=0.2,
                            sig_max=4.0,
@@ -142,15 +164,17 @@ def random_gaussian_kernel(l=21,
     :return:
     """
     if np.random.random() < rate_iso:
-        return random_isotropic_gaussian_kernel(l=l,
-                                                sig_min=sig_min,
-                                                sig_max=sig_max,
-                                                tensor=tensor)
+        kernel, sigma = random_isotropic_gaussian_kernel(l=l,
+                                                         sig_min=sig_min,
+                                                         sig_max=sig_max,
+                                                         tensor=tensor)
     else:
-        return random_anisotropic_gaussian_kernel(l=l,
-                                                  sig_min=sig_min,
-                                                  sig_max=sig_max,
-                                                  tensor=tensor)
+        kernel, sigma = random_anisotropic_gaussian_kernel(l=l,
+                                                           sig_min=sig_min,
+                                                           sig_max=sig_max,
+                                                           tensor=tensor)
+
+    return kernel
 
 
 def plot_kernel(out_k_np, save_path, gt_k_np=None):
@@ -208,25 +232,33 @@ def test_blur():
     :return:
     """
     img_name = "test_plate.jpg"
-    img_dir = "E:/PyProjs/TestExperiments"
+    img_dir = "E:/PyProjs/TestExperiments/data"
     img_path = os.path.abspath(img_dir + "/" + img_name)
     if not os.path.isfile(img_path):
         print("[Err]: invalid image path: {:s}".format(img_path))
         exit(-1)
 
+    save_dir = "./data"
     img = cv2.imread(img_path, cv2.IMREAD_COLOR)
     h, w, c = img.shape
     if max(w, h) > 1000:
         img = cv2.resize(img, (int(w // 2), int(h // 2)), cv2.INTER_AREA)
 
-    for i in range(10):
+    for i in range(20):
         ## ----- generate random blurring kernel
-        k_size = np.random.randint(3, 10)  # [3, 7]
-        kernel, sigma = random_gaussian_kernel(l=k_size,
-                                               sig_min=0.5,
-                                               sig_max=7,
-                                               rate_iso=0.2,
-                                               tensor=False)
+        k_size = np.random.randint(3, 22)  # [3, 7]
+        k_type = np.random.randint(0, 3)
+        if k_type == 0:
+            print("sinc kernel")
+            if k_size % 2 == 0:
+                k_size += 1
+            kernel = circular_lowpass_kernel(math.pi / 3, k_size)
+        else:
+            kernel = random_gaussian_kernel(l=k_size,
+                                            sig_min=0.5,
+                                            sig_max=7,
+                                            rate_iso=0.2,
+                                            tensor=False)
 
         ## ----- apply blurring
         blurred_img = cv2.filter2D(img, -1, kernel)
@@ -249,11 +281,21 @@ def test_blur():
         # cv2.imshow(win_name, blurred_img)
         # cv2.waitKey()
 
-        save_img_path = "./blurred_{:d}_{:d}.png".format(i, k_size)
+        if k_type == 0:
+            save_img_path = save_dir + "/" + "blurred_sinc_{:d}_{:d}.png" \
+                .format(i, k_size)
+        else:
+            save_img_path = save_dir + "/" + "blurred_{:d}_{:d}.png" \
+                .format(i, k_size)
         cv2.imwrite(save_img_path, blurred_img)
 
         # cv2.imshow("kernel size: {:d}".format(k_size), kernel_img)
-        save_kernel_path = "./kernel_{:d}_{:d}.png".format(i, k_size)
+        if k_type == 0:
+            save_kernel_path = save_dir + "/" + "kernel_sinc_{:d}_{:d}.png" \
+                .format(i, k_size)
+        else:
+            save_kernel_path = save_dir + "/" + "kernel_{:d}_{:d}.png" \
+            .format(i, k_size)
         # plot_kernel(kernel_img, save_kernel_path)  ## PIL
         draw_kernel(kernel_img, save_kernel_path)  ## OpenCV
 
